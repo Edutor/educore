@@ -1,0 +1,47 @@
+buildscript {
+    ext.kotlin_version = '1.2.31'
+    ext.eduport_version = '0.9'
+    ext.eduport_jarchecker_version = '0.9'
+
+    repositories {
+        mavenCentral()
+        }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        }
+    }
+
+
+group 'dk.edutor'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'kotlin'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+    }
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    compile "dk.edutor:eduport:$eduport_version"
+    compile "dk.edutor:eduport-jarchecker:$eduport_jarchecker_version"
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    }
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+    }
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+    }
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'EdutorKt'
+        }
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    }
