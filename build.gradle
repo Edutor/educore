@@ -1,8 +1,14 @@
 buildscript {
-    ext.kotlin_version = '1.2.31'
-    ext.eduport_version = '0.9.1'
-    ext.eduport_jarchecker_version = '0.9.1'
-    ext.ktor_version = '0.9.0'
+    ext {
+        kotlin_version = '1.2.31'
+        hibernate_version = '5.2.15.Final'
+        mysql_version = '5.1.46'
+        ktor_version = '0.9.0'
+
+        eduport_version = '0.9.1'
+        eduport_jarchecker_version = '0.9.1'
+        eduport_simplechecker_version = '0.9.1'
+        }
 
 
     repositories {
@@ -10,15 +16,17 @@ buildscript {
         }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-noarg:$kotlin_version"
         }
     }
 
 
 group 'dk.edutor'
-version '1.0-SNAPSHOT'
+version '0.5-SNAPSHOT'
 
 apply plugin: 'java'
 apply plugin: 'kotlin'
+apply plugin: "kotlin-jpa"
 
 sourceCompatibility = 1.8
 
@@ -35,11 +43,17 @@ dependencies {
     compile "io.ktor:ktor-server-netty:$ktor_version"
     compile "io.ktor:ktor-gson:$ktor_version"
     compile "ch.qos.logback:logback-classic:1.2.1"
+    // compile "javax:javaee-api:7.0"
+    compile "org.hibernate:hibernate-core:$hibernate_version"
+    compile "org.hibernate:hibernate-c3p0:$hibernate_version"
+    compile "mysql:mysql-connector-java:$mysql_version"
 
     compile "dk.edutor:eduport:$eduport_version"
     compile "dk.edutor:eduport-jarchecker:$eduport_jarchecker_version"
+    compile "dk.edutor:eduport-simple:$eduport_simplechecker_version"
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
+    testCompile "org.hibernate:hibernate-testing:$hibernate_version"
     }
 
 compileKotlin {
