@@ -1,6 +1,6 @@
 buildscript {
     ext {
-        kotlin_version = '1.2.31'
+        kotlin_version = '1.2.40'
         hibernate_version = '5.2.15.Final'
         mysql_version = '5.1.46'
         ktor_version = '0.9.0'
@@ -40,6 +40,7 @@ repositories {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     compile "io.ktor:ktor-server-netty:$ktor_version"
     compile "io.ktor:ktor-gson:$ktor_version"
     compile "ch.qos.logback:logback-classic:1.2.1"
