@@ -46,10 +46,6 @@
     <orderEntry type="library" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.2.40" level="project" />
     <orderEntry type="library" name="Gradle: io.ktor:ktor-server-netty:0.9.0" level="project" />
     <orderEntry type="library" name="Gradle: io.ktor:ktor-gson:0.9.0" level="project" />
-<<<<<<< HEAD
-    <orderEntry type="library" name="Gradle: ch.qos.logback:logback-classic:1.2.1" level="project" />
-=======
->>>>>>> e0addf8bc075b3870a87b738651b8d91884f8cd3
     <orderEntry type="library" name="Gradle: io.ktor:ktor-server-host-common:0.9.0" level="project" />
     <orderEntry type="library" name="Gradle: io.ktor:ktor-server-core:0.9.0" level="project" />
     <orderEntry type="library" name="Gradle: io.ktor:ktor-http:0.9.0" level="project" />
