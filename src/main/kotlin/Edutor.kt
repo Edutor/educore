@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dk.edutor.eduport.Port
@@ -6,6 +7,11 @@ import dk.edutor.eduport.jarchecker.JarChecker
 import dk.edutor.eduport.Challenge
 import dk.edutor.eduport.ChallengeSet
 import dk.edutor.eduport.MCChallenge
+=======
+import dk.edutor.eduport.*
+import dk.edutor.eduport.jarchecker.JarChecker
+import dk.edutor.eduport.simple.SimpleChecker
+>>>>>>> e0addf8bc075b3870a87b738651b8d91884f8cd3
 import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.content.*
@@ -18,7 +24,13 @@ import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import java.text.DateFormat
 
+<<<<<<< HEAD
 val gson = GsonBuilder().setPrettyPrinting().create()
+=======
+val jarChecker = JarChecker()
+val simpleChecker = SimpleChecker()
+
+>>>>>>> e0addf8bc075b3870a87b738651b8d91884f8cd3
 fun main(args: Array<String>) {
     val server = embeddedServer(Netty, 8080) {
         install(DefaultHeaders)
@@ -34,9 +46,25 @@ fun main(args: Array<String>) {
             get("/hello") {
                 call.respond("goodbye")
                 }
+<<<<<<< HEAD
             get("/challenge"){
                 call.respond(gson.toJson(getChallengeSet(listOf("Math"))))
             }
+=======
+            get("/sayHello/{text}") {
+                // a ?: b  ->  if (a == null) b else a (java: (a == null) ? b : a )
+                val text = call.parameters["text"] ?: ""
+                val result = arrayOf(jarChecker.sayHello(text), simpleChecker.sayHello(text))
+                call.respond(result)
+                }
+            get("/check/{answer}") {
+                val challenge = StringChallenge("42", "What is 7 multiplied by 6")
+                val answer = call.parameters["answer"] ?: "I don't know"
+                val solution = StringSolution(answer, PersonIdentifier(1), 1)
+                val assesment = simpleChecker.check(challenge, solution)
+                call.respond(assesment)
+                }
+>>>>>>> e0addf8bc075b3870a87b738651b8d91884f8cd3
             static("") {
                 resources("www")
                 defaultResource("index.html", "www")
