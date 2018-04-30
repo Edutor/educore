@@ -1,3 +1,5 @@
+# For security reasons
+persistence.xml
 
 # Created by https://www.gitignore.io/api/java,kotlin,intellij
 
