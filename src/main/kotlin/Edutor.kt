@@ -1,6 +1,8 @@
 import com.google.gson.GsonBuilder
 import dk.edutor.eduport.*
+//import dk.edutor.eduport.
 import dk.edutor.eduport.jarchecker.JarChecker
+import dk.edutor.eduport.mc.MCChecker
 import dk.edutor.eduport.simple.SimpleChecker
 import io.ktor.application.call
 import io.ktor.application.install
@@ -27,6 +29,7 @@ val gson = GsonBuilder().setPrettyPrinting().create()
 
 val jarChecker = JarChecker()
 val simpleChecker = SimpleChecker()
+val mcChecker = MCChecker()
 
 
 fun main(args: Array<String>) {
@@ -53,7 +56,7 @@ fun main(args: Array<String>) {
                 call.respond("goodbye")
             }
             get("/tag"){
-                call.respond(gson.toJson(allTags))
+                call.respond(allTags)
             }
             get("/challenge/tag/{tagname}"){
                 val tagname = call.parameters["tagname"]?:"" //Should maybe change to !! (double bang) to get an exception when tagname is null?
@@ -70,14 +73,11 @@ fun main(args: Array<String>) {
 
                             when (part) {
                                 is PartData.FormItem -> {
-                                    val value = part.value
-                                    println(value)//
-
-                                    //VIRKER IKKE ENDNU
-                                    val solution = gson.fromJson(value, MCSolution::class.java)
-                                    println(solution)
-//                                    appendln("Form field: ${part.partName} = ${part.value}")
-//                                    val solution = MCSolution()
+                                    println(part.value)
+                                    val jsonSol = part.value
+                                    val solution: SolutionX = gson.fromJson(jsonSol, SolutionX::class.java)
+                                    println(solution.solver)
+//
                                 }
                                 is PartData.FileItem -> appendln("File field: ${part.partName} -> ${part.originalFileName} of ${part.contentType}")
                             }
@@ -113,6 +113,8 @@ fun main(args: Array<String>) {
     server.start(wait = true)
 }
 //Remove solution from challenge
+data class SolutionX(val id: Int, val answers: List<String>, val solver: String)
+
 data class ChallengeWrapper(val id: Int, val question:String, val choices: List<String>)
 fun MCChallenge.removeSolution(): ChallengeWrapper {
     return ChallengeWrapper(this.id, this.question, this.answers.keys.toList())
@@ -120,7 +122,7 @@ fun MCChallenge.removeSolution(): ChallengeWrapper {
 
 fun getChallengeSet(tags: List<String>): List<ChallengeWrapper> {
     var list: MutableList<ChallengeWrapper> = ArrayList()
-    for (c in allChallenges)
+    for (c in allChallenges.values)
         if(c.tags.intersect(tags).size >= 1){
             when(c){
                 is MCChallenge -> list.add(c.removeSolution())
@@ -128,13 +130,24 @@ fun getChallengeSet(tags: List<String>): List<ChallengeWrapper> {
         }
     return list
 }
-val allChallenges = listOf<Challenge>(
-        MCChallenge(1, answers = mapOf("3" to false, "4" to true, "5" to false), description = "", question = "What is 2 + 2", tags = listOf("Math","Addition")),
-        MCChallenge(2, answers = mapOf("0" to false, "18" to false, "20" to true), description = "", question = "What is 2 * 10", tags = listOf("Math", "Multiplication")),
-        MCChallenge(3, answers = mapOf("Babirusa" to true, "Crocodile" to false, "Camel" to true), description = "", question = "What animals are mammals", tags = listOf("Bio")),
-        MCChallenge(4, answers = mapOf("Beethoven" to true, "Einstein" to false, "Mozart" to true), description = "", question = "Who were great composers", tags = listOf("Music"))
+fun getChallengeById(id: Int){
+    allChallenges.get(id)
+}
+val allChallenges = mapOf<Int, Challenge>(
+       1 to MCChallenge(1, answers = mapOf("3" to false, "4" to true, "5" to false), description = "", question = "What is 2 + 2", tags = listOf("Math","Addition")),
+       2 to MCChallenge(2, answers = mapOf("0" to false, "18" to false, "20" to true), description = "", question = "What is 2 * 10", tags = listOf("Math", "Multiplication")),
+       3 to MCChallenge(3, answers = mapOf("Babirusa" to true, "Crocodile" to false, "Camel" to true), description = "", question = "What animals are mammals", tags = listOf("Bio")),
+       4 to MCChallenge(4, answers = mapOf("Beethoven" to true, "Einstein" to false, "Mozart" to true), description = "", question = "Who were great composers", tags = listOf("Music"))
 )
 val allTags = listOf<String>(
         "Math", "Multiplication", "Bio", "Music"
 )
-//val testSol = MCSolution()
+fun checkSolution(sol: Solution){
+//    when(sol){
+//        is MCSolution -> {
+//            val id: Int = sol.id.toInt()
+//            val chal: MCChallenge = allChallenges.get(id)!!
+//            if(chal)
+//        }
+//    }
+}
