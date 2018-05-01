@@ -1,11 +1,11 @@
 buildscript {
     ext {
-        kotlin_version = '1.2.40'
+        kotlin_version = '1.2.41'
         hibernate_version = '5.2.15.Final'
         mysql_version = '5.1.46'
         ktor_version = '0.9.0'
 
-        eduport_version = '0.9.1'
+        eduport_version = '0.9.3'
         eduport_jarchecker_version = '0.9.1'
         eduport_simplechecker_version = '0.9.1'
         eduport_mc_checker_version = '0.9.1'
