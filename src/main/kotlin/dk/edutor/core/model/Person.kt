@@ -5,7 +5,7 @@ import javax.persistence.*
 @Entity
 @Table(name = "PEOPLE")
 data class Person(
-  @Id
-  val id: Long,
-  var name: String)
+    @Id @GeneratedValue val id: Long,
+    var name: String
+    )
 
