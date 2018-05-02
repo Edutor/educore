@@ -60,14 +60,15 @@ fun main(args: Array<String>) {
             }
             get("/challenge/tag/{tagname}"){
                 val tagname = call.parameters["tagname"]?:"" //Should maybe change to !! (double bang) to get an exception when tagname is null?
-                call.respond(gson.toJson(getChallengeSet(listOf(tagname))))
+                call.respond(getChallengeSet(listOf(tagname)))
             }
             post("/postdemo/"){
                 val multipart = call.receiveMultipart()
-                call.respondWrite {
+
                     if (!call.request.isMultipart()) {
-                        appendln("Not a multipart request")
+                        call.respond ("Not a multipart request")
                     } else {
+                                    val assessmentList: MutableList<Assessment> = mutableListOf<Assessment>()
                         while (true) {
                             val part = multipart.readPart() ?: break
 
@@ -75,17 +76,19 @@ fun main(args: Array<String>) {
                                 is PartData.FormItem -> {
                                     println(part.value)
                                     val jsonSol = part.value
-                                    val solution: SolutionX = gson.fromJson(jsonSol, SolutionX::class.java)
-                                    println(solution.solver)
-//
+                                    val solution: MCSolution = gson.fromJson(jsonSol, MCSolution::class.java)
+                                    val result = mcChecker.check(getChallengeById(solution.id.toInt())!!, MCSolution(solution.answers, PersonIdentifier(1),solution.id))
+                                    assessmentList.add(result)
+                                    println("Resultatet er kommet. grade = ${result.grade}")
                                 }
-                                is PartData.FileItem -> appendln("File field: ${part.partName} -> ${part.originalFileName} of ${part.contentType}")
+//                                is PartData.FileItem -> call.respond("File field: ${part.partName} -> ${part.originalFileName} of ${part.contentType}")
                             }
                             part.dispose()
                         }
+                        call.respond(assessmentList)
                     }
                 }
-            }
+
             post("/challenge/submit"){
                 throw UnsupportedOperationException("This method is not implemented yet")
             }
@@ -112,16 +115,15 @@ fun main(args: Array<String>) {
     }
     server.start(wait = true)
 }
-//Remove solution from challenge
-data class SolutionX(val id: Int, val answers: List<String>, val solver: String)
 
+//Remove the solution from challenge
 data class ChallengeWrapper(val id: Int, val question:String, val choices: List<String>)
 fun MCChallenge.removeSolution(): ChallengeWrapper {
     return ChallengeWrapper(this.id, this.question, this.answers.keys.toList())
 }
 
 fun getChallengeSet(tags: List<String>): List<ChallengeWrapper> {
-    var list: MutableList<ChallengeWrapper> = ArrayList()
+    val list: MutableList<ChallengeWrapper> = ArrayList()
     for (c in allChallenges.values)
         if(c.tags.intersect(tags).size >= 1){
             when(c){
@@ -130,9 +132,8 @@ fun getChallengeSet(tags: List<String>): List<ChallengeWrapper> {
         }
     return list
 }
-fun getChallengeById(id: Int){
-    allChallenges.get(id)
-}
+fun getChallengeById(id: Int):Challenge? = allChallenges.get(id)
+
 val allChallenges = mapOf<Int, Challenge>(
        1 to MCChallenge(1, answers = mapOf("3" to false, "4" to true, "5" to false), description = "", question = "What is 2 + 2", tags = listOf("Math","Addition")),
        2 to MCChallenge(2, answers = mapOf("0" to false, "18" to false, "20" to true), description = "", question = "What is 2 * 10", tags = listOf("Math", "Multiplication")),
@@ -142,12 +143,3 @@ val allChallenges = mapOf<Int, Challenge>(
 val allTags = listOf<String>(
         "Math", "Multiplication", "Bio", "Music"
 )
-fun checkSolution(sol: Solution){
-//    when(sol){
-//        is MCSolution -> {
-//            val id: Int = sol.id.toInt()
-//            val chal: MCChallenge = allChallenges.get(id)!!
-//            if(chal)
-//        }
-//    }
-}
