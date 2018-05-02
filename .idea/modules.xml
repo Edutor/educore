@@ -2,6 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Edutor-educore_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Edutor-educore_main.iml" group="educore" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Edutor-educore_test.iml" filepath="$PROJECT_DIR$/.idea/modules/Edutor-educore_test.iml" group="educore" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/educore.iml" filepath="$PROJECT_DIR$/.idea/modules/educore.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/educore_main.iml" filepath="$PROJECT_DIR$/.idea/modules/educore_main.iml" group="educore" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/educore_test.iml" filepath="$PROJECT_DIR$/.idea/modules/educore_test.iml" group="educore" />

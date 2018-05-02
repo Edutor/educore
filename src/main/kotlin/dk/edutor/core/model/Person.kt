@@ -4,8 +4,12 @@ import javax.persistence.*
 
 @Entity
 @Table(name = "PEOPLE")
+@NamedQuery(name = "allPeople", query = "SELECT p FROM Person p")
 data class Person(
-  @Id
-  val id: Long,
-  var name: String)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Int,
+
+    var name: String
+    )
 

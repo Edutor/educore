@@ -4,6 +4,8 @@
     <bytecodeTargetLevel>
       <module name="educore_main" target="1.8" />
       <module name="educore_test" target="1.8" />
+      <module name="Edutor-educore_main" target="1.8" />
+      <module name="Edutor-educore_test" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
