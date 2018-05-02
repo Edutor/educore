@@ -60,7 +60,7 @@ fun main(args: Array<String>) {
             }
             get("/challenge/tag/{tagname}"){
                 val tagname = call.parameters["tagname"]?:"" //Should maybe change to !! (double bang) to get an exception when tagname is null?
-                call.respond(getChallengeSet(listOf(tagname)))
+                call.respond(getChallengeSet(allImgChallenges,listOf(tagname)))
             }
             post("/postdemo/"){
                 val multipart = call.receiveMultipart()
@@ -117,14 +117,14 @@ fun main(args: Array<String>) {
 }
 
 //Remove the solution from challenge
-data class ChallengeWrapper(val id: Int, val question:String, val choices: List<String>)
+data class ChallengeWrapper(val id: Int, val question:String, val choices: List<String>, val imgs:List<String>?)
 fun MCChallenge.removeSolution(): ChallengeWrapper {
-    return ChallengeWrapper(this.id, this.question, this.answers.keys.toList())
+    return ChallengeWrapper(this.id, this.question, this.answers.keys.toList(),this.imgs)
 }
 
-fun getChallengeSet(tags: List<String>): List<ChallengeWrapper> {
+fun getChallengeSet(challenges: Map<Int, Challenge> , tags: List<String>): List<ChallengeWrapper> {
     val list: MutableList<ChallengeWrapper> = ArrayList()
-    for (c in allChallenges.values)
+    for (c in challenges.values)
         if(c.tags.intersect(tags).size >= 1){
             when(c){
                 is MCChallenge -> list.add(c.removeSolution())
@@ -139,6 +139,13 @@ val allChallenges = mapOf<Int, Challenge>(
        2 to MCChallenge(2, answers = mapOf("0" to false, "18" to false, "20" to true), description = "", question = "What is 2 * 10", tags = listOf("Math", "Multiplication")),
        3 to MCChallenge(3, answers = mapOf("Babirusa" to true, "Crocodile" to false, "Camel" to true), description = "", question = "What animals are mammals", tags = listOf("Bio")),
        4 to MCChallenge(4, answers = mapOf("Beethoven" to true, "Einstein" to false, "Mozart" to true), description = "", question = "Who were great composers", tags = listOf("Music"))
+)
+val allImgChallenges = mapOf<Int, Challenge>(
+       1 to MCChallenge(1, answers = mapOf("Babirusa" to true, "Crocodile" to false, "Camel" to true), description = "", question = "What animals are mammals", tags = listOf("Bio"), imgs=listOf("https://2.bp.blogspot.com/-B6CfKV9ztaQ/Uxc-y1WXW-I/AAAAAAAAAiY/x-DaKjuoA7Q/s1600/babirusa.jpg","https://cdn-images-1.medium.com/max/2000/1*Uhg4Yo0o-zfdNNXz5v_onw.jpeg","https://cdn3.volusion.com/kapts.nrbqf/v/vspfiles/photos/CAMELBURGERS16OZ-2.jpg?1496409148")),
+       2 to MCChallenge(2, answers = mapOf("Eagle" to true, "Crocodile" to true, "Camel" to false), description = "", question = "What animals are carnivores", tags = listOf("Bio"), imgs=listOf("https://i.ytimg.com/vi/2yBsVu5-Rmo/maxresdefault.jpg","https://cdn-images-1.medium.com/max/2000/1*Uhg4Yo0o-zfdNNXz5v_onw.jpeg","https://cdn3.volusion.com/kapts.nrbqf/v/vspfiles/photos/CAMELBURGERS16OZ-2.jpg?1496409148")),
+       3 to MCChallenge(3, answers = mapOf("Tuna" to true, "Dolphin" to false, "Shark" to true), description = "", question = "What animals are fish", tags = listOf("Bio"), imgs=listOf("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkLcRtmwrH7kYc8tQ0fHMkdjtdTX-IVZMGpU1aE4DRDteGhcHz","https://www.costarica-scuba.com/wp-content/uploads/2012/10/Spinner-Dolphin.jpg", "https://public-media.smithsonianmag.com/filer/d0/06/d00620a0-8dc9-4be8-a3c1-cd075845b348/42-53008611.jpg")),
+       4 to MCChallenge(4, answers = mapOf("Toad" to false, "Salamander" to false, "Snake" to true, "Crocodile" to true), description = "", question = "What animals are reptiles", tags = listOf("Bio"), imgs=listOf("https://r.hswstatic.com/w_907/gif/cane-toad0.jpg","https://herpsofnc.org/wp-content/uploads/2016/10/10655651354_219be6f4a0_b.jpg", "https://i2-prod.mirror.co.uk/incoming/article6422251.ece/ALTERNATES/s615/Snake.jpg","https://cdn-images-1.medium.com/max/2000/1*Uhg4Yo0o-zfdNNXz5v_onw.jpeg")),
+       5 to MCChallenge(5, answers = mapOf("Toad" to true, "Salamander" to true, "Snake" to false, "Crocodile" to false), description = "", question = "What animals are ampibians", tags = listOf("Bio"), imgs=listOf("https://r.hswstatic.com/w_907/gif/cane-toad0.jpg","https://herpsofnc.org/wp-content/uploads/2016/10/10655651354_219be6f4a0_b.jpg", "https://i2-prod.mirror.co.uk/incoming/article6422251.ece/ALTERNATES/s615/Snake.jpg","https://cdn-images-1.medium.com/max/2000/1*Uhg4Yo0o-zfdNNXz5v_onw.jpeg"))
 )
 val allTags = listOf<String>(
         "Math", "Multiplication", "Bio", "Music"
