@@ -35,8 +35,9 @@ repositories {
     mavenLocal()
     maven { url myMavenRepoReadUrl }
     mavenCentral()
-    maven { url "http://dl.bintray.com/kotlin/ktor" }
+    maven { url "https://dl.bintray.com/kotlin/ktor" }
     maven { url "https://dl.bintray.com/kotlin/kotlinx" }
+    maven { url "https://dl.bintray.com/kotlin/exposed" }
     }
 
 dependencies {
@@ -48,6 +49,8 @@ dependencies {
     // compile "javax:javaee-api:7.0"
     compile "org.hibernate:hibernate-core:$hibernate_version"
     compile "org.hibernate:hibernate-c3p0:$hibernate_version"
+
+    compile "org.jetbrains.exposed:exposed:0.10.2"
     compile "mysql:mysql-connector-java:$mysql_version"
 
     compile "dk.edutor:eduport:$eduport_version"
