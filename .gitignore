@@ -1,3 +1,7 @@
+### MySQL configurations ###
+persistence.xml
+exposed.properties
+
 
 # Created by https://www.gitignore.io/api/java,macos,linux,gradle,kotlin,windows,intellij
 

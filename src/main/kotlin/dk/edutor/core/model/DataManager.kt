@@ -1,3 +1,9 @@
 package dk.edutor.core.model
 
-open class DataManager
+import javax.persistence.Persistence
+
+object DataManager {
+  private val entityManagerFactory = Persistence.createEntityManagerFactory("edudata")
+  fun createEntityManager() = entityManagerFactory.createEntityManager()
+  fun close() { entityManagerFactory.close() }
+  }
