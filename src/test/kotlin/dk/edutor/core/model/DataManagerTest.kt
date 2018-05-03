@@ -3,6 +3,7 @@ package dk.edutor.core.model
 import org.junit.Assert
 import org.junit.Test
 
+/*
 class DataManagerTest {
 
   @Test
@@ -16,3 +17,4 @@ class DataManagerTest {
 
 
 }
+*/

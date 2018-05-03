@@ -1,4 +1,3 @@
-import People.name
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SchemaUtils.create
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -39,14 +38,20 @@ fun main(args: Array<String>) {
     val kurtId = People.insert {
       it[name] = "Kurt"
       it[email] = "kurt@mail.dk"
-      } get People.id
+      }.get(People.id)
 
-    val sonjaId = People.insert {
+    val sonjaRef = People.insert {
       it[name] = "Sonja"
       it[email] = "sonja@post.dk"
       }
 
+    val sonjaId1 = sonjaRef.get(People.id)
+    val sonjaId2 = sonjaRef get People.id
+
     People.selectAll().forEach { println("${it[People.id]}: ${it[People.name]} ${it[People.email]}") }
 
     }
+
   }
+
+
