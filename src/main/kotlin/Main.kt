@@ -16,7 +16,7 @@ class Configuration {
   init {
     properties.load(this.javaClass.classLoader.getResourceAsStream("exposed.properties"))
     for (k in properties.stringPropertyNames()) {
-      println("$k -> ${properties[k]}")
+      // println("$k -> ${properties[k]}")
       }
     }
 
@@ -27,8 +27,8 @@ class Configuration {
 
 fun main(args: Array<String>) {
   val configuration = Configuration()
-  Database.connect("jdbc:mysql://206.189.49.65/edutor",
-      driver = "com.mysql.jdbc.Driver",
+  Database.connect(configuration["url"],
+      driver = configuration["driver"],
       user = configuration["user"],
       password = configuration["password"]
       )

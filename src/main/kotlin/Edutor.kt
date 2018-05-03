@@ -77,7 +77,14 @@ fun main(args: Array<String>) {
                                     println(part.value)
                                     val jsonSol = part.value
                                     val solution: MCSolution = gson.fromJson(jsonSol, MCSolution::class.java)
-                                    val result = mcChecker.check(getChallengeById(solution.id.toInt())!!, MCSolution(solution.answers, PersonIdentifier(1),solution.id))
+                                    val result = mcChecker.check(
+                                        MCSolution(
+                                            solution.id,
+                                            getChallengeById(solution.id)!! as MCChallenge,
+                                            Person(1),
+                                            solution.answers
+                                            )
+                                        )
                                     assessmentList.add(result)
                                     println("Resultatet er kommet. grade = ${result.grade}")
                                 }
@@ -99,9 +106,9 @@ fun main(args: Array<String>) {
                 call.respond(result)
             }
             get("/check/{answer}") {
-                val challenge = StringChallenge("42", "What is 7 multiplied by 6", listOf())
+                val challenge = StringChallenge(7, "What is 7 multiplied by 6", listOf(), "42")
                 val answer = call.parameters["answer"] ?: "I don't know"
-                val solution = StringSolution(answer, PersonIdentifier(1), 1)
+                val solution = StringSolution(1, challenge, Person(1), answer)
                 val assesment = simpleChecker.check(challenge, solution)
                 call.respond(assesment)
             }
