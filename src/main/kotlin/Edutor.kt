@@ -76,7 +76,7 @@ fun main(args: Array<String>) {
                                 is PartData.FormItem -> {
                                     println(part.value)
                                     val jsonSol = part.value
-                                    val solution: MCSolution = gson.fromJson(jsonSol, MCSolution::class.java)
+it                                    val solution: MCSolution = gson.fromJson(jsonSol, MCSolution::class.java)
                                     val result = mcChecker.check(getChallengeById(solution.id.toInt())!!, MCSolution(solution.answers, PersonIdentifier(1),solution.id))
                                     assessmentList.add(result)
                                     println("Resultatet er kommet. grade = ${result.grade}")
