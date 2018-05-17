@@ -26,7 +26,8 @@ class Configuration {
 
 fun main(args: Array<String>) {
   val configuration = Configuration()
-  Database.connect("jdbc:mysql://206.189.49.65/edutor",
+  //Database.connect("jdbc:mysql://206.189.49.65/edutor",
+  Database.connect("jdbc:mysql://localhost:3306/edutor",
       driver = "com.mysql.jdbc.Driver",
       user = configuration["user"],
       password = configuration["password"]
