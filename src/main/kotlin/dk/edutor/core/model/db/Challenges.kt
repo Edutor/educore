@@ -1,5 +1,7 @@
 package dk.edutor.core.model.db
 
+import dk.edutor.eduport.Challenge
+import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.Table
 
 object CHALLENGES : Table() {
@@ -9,7 +11,8 @@ object CHALLENGES : Table() {
   }
 
 object STRING_CHALLENGES : Table() {
-  val id = integer("id").references(CHALLENGES.id)
+  val id = integer("id").references(CHALLENGES.id).primaryKey()
   val question = varchar("question", 200)
   }
+
 

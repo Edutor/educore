@@ -27,6 +27,9 @@ exposed.properties
 .idea/**/gradle.xml
 .idea/**/libraries
 
+# Vagrant
+.vagrant
+
 # CMake
 cmake-build-debug/
 
