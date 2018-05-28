@@ -9,6 +9,7 @@ buildscript {
         eduport_jarchecker_version = '0.9.1'
         eduport_simplechecker_version = '0.9.1'
         eduport_mc_checker_version = '0.9.1'
+        eduport_webchecker_version = '0.9.4'
         }
 
 
@@ -57,6 +58,7 @@ dependencies {
     compile "dk.edutor:eduport-jarchecker:$eduport_jarchecker_version"
     compile "dk.edutor:eduport-simple:$eduport_simplechecker_version"
     compile "dk.edutor:eduport-mc-checker:$eduport_mc_checker_version"
+    compile "dk.edutor:eduport-webchecker:$eduport_webchecker_version"
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testCompile "org.hibernate:hibernate-testing:$hibernate_version"

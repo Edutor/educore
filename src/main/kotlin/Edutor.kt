@@ -3,6 +3,7 @@ import dk.edutor.eduport.*
 //import dk.edutor.eduport.
 import dk.edutor.eduport.jarchecker.JarChecker
 import dk.edutor.eduport.mc.MCChecker
+import dk.edutor.eduport.webchecker.WebChecker
 import dk.edutor.eduport.simple.SimpleChecker
 import io.ktor.application.call
 import io.ktor.application.install
@@ -30,17 +31,17 @@ val gson = GsonBuilder().setPrettyPrinting().create()
 val jarChecker = JarChecker()
 val simpleChecker = SimpleChecker()
 val mcChecker = MCChecker()
-
+val webChecker = WebChecker()
 
 fun main(args: Array<String>) {
     val server = embeddedServer(Netty, 8080)
     {
-        install(DefaultHeaders){
-//            header("access-Control-Allow-Origin", "*")
+        install(DefaultHeaders) {
+            //            header("access-Control-Allow-Origin", "*")
 //            header("access-control-allow-methods", "GET, HEAD")
 
         }
-        install(CORS){
+        install(CORS) {
             anyHost()
         }
         install(Compression)
@@ -55,49 +56,82 @@ fun main(args: Array<String>) {
             get("/hello") {
                 call.respond("goodbye")
             }
-            get("/tag"){
+            get("/tag") {
                 call.respond(allTags)
             }
-            get("/challenge/tag/{tagname}"){
-                val tagname = call.parameters["tagname"]?:"" //Should maybe change to !! (double bang) to get an exception when tagname is null?
+            get("/challenge/tag/{tagname}") {
+                val tagname = call.parameters["tagname"]
+                        ?: "" //Should maybe change to !! (double bang) to get an exception when tagname is null?
                 call.respond(getChallengeSet(listOf(tagname)))
             }
-            post("/postdemo/"){
+            get("/webchecker/") {
+
+                call.respond(listOf("WebChallenge1", "WebChallenge2"))
+            }
+            post("/webchecker/") {
+                val multipart = call.receiveMultipart()
+                val parts = mutableMapOf<String, String>()
+
+                if (!call.request.isMultipart()) {
+                    call.respond("Not a multipart request")
+                } else {
+                    while (true) {
+                        val part = multipart.readPart() ?: break
+
+                        when (part) {
+                            is PartData.FormItem -> {
+                                parts["" + part.partName] = part.value
+                            }
+                        }
+                        part.dispose()
+                    }
+                    val response = webChecker.check(WebSolution(
+                            1,
+                            WebChallenge(Integer.parseInt(parts["challengeid"]), description = "", tags = listOf("Web", "Check")),
+                            Person(1),
+                            "" + parts["url"]
+                    ))
+
+                    //Fix - JSON Object same values: solution = s and grade = g
+                    call.respond(gson.toJson(response));
+                }
+            }
+            post("/postdemo/") {
                 val multipart = call.receiveMultipart()
 
-                    if (!call.request.isMultipart()) {
-                        call.respond ("Not a multipart request")
-                    } else {
-                                    val assessmentList: MutableList<Assessment> = mutableListOf<Assessment>()
-                        while (true) {
-                            val part = multipart.readPart() ?: break
+                if (!call.request.isMultipart()) {
+                    call.respond("Not a multipart request")
+                } else {
+                    val assessmentList: MutableList<Assessment> = mutableListOf<Assessment>()
+                    while (true) {
+                        val part = multipart.readPart() ?: break
 
-                            when (part) {
-                                is PartData.FormItem -> {
-                                    println(part.value)
-                                    val jsonSol = part.value
-                                    val solution: MCSolution = gson.fromJson(jsonSol, MCSolution::class.java)
-                                    val result = mcChecker.check(
+                        when (part) {
+                            is PartData.FormItem -> {
+                                println(part.value)
+                                val jsonSol = part.value
+                                val solution: MCSolution = gson.fromJson(jsonSol, MCSolution::class.java)
+                                val result = mcChecker.check(
                                         MCSolution(
-                                            solution.id,
-                                            getChallengeById(solution.id)!! as MCChallenge,
-                                            Person(1),
-                                            solution.answers
-                                            )
+                                                solution.id,
+                                                getChallengeById(solution.id)!! as MCChallenge,
+                                                Person(1),
+                                                solution.answers
                                         )
-                                    assessmentList.add(result)
-                                    println("Resultatet er kommet. grade = ${result.grade}")
-                                }
-//                                is PartData.FileItem -> call.respond("File field: ${part.partName} -> ${part.originalFileName} of ${part.contentType}")
+                                )
+                                assessmentList.add(result)
+                                println("Resultatet er kommet. grade = ${result.grade}")
                             }
-                            part.dispose()
+//                                is PartData.FileItem -> call.respond("File field: ${part.partName} -> ${part.originalFileName} of ${part.contentType}")
                         }
-                        call.respond(assessmentList)
+                        part.dispose()
                     }
+                    call.respond(assessmentList)
                 }
+            }
 
-            post("/challenge/submit"){
-                throw UnsupportedOperationException("This method is not implemented yet")
+            post("/challenge/submit") {
+                //throw UnsupportedOperationException("This method is not implemented yet")
             }
             get("/sayHello/{text}") {
                 // a ?: b  ->  if (a == null) b else a (java: (a == null) ? b : a )
@@ -124,7 +158,8 @@ fun main(args: Array<String>) {
 }
 
 //Remove the solution from challenge
-data class ChallengeWrapper(val id: Int, val question:String, val choices: List<String>)
+data class ChallengeWrapper(val id: Int, val question: String, val choices: List<String>)
+
 fun MCChallenge.removeSolution(): ChallengeWrapper {
     return ChallengeWrapper(this.id, this.question, this.answers.keys.toList())
 }
@@ -132,20 +167,21 @@ fun MCChallenge.removeSolution(): ChallengeWrapper {
 fun getChallengeSet(tags: List<String>): List<ChallengeWrapper> {
     val list: MutableList<ChallengeWrapper> = ArrayList()
     for (c in allChallenges.values)
-        if(c.tags.intersect(tags).size >= 1){
-            when(c){
+        if (c.tags.intersect(tags).size >= 1) {
+            when (c) {
                 is MCChallenge -> list.add(c.removeSolution())
             }
         }
     return list
 }
-fun getChallengeById(id: Int):Challenge? = allChallenges.get(id)
+
+fun getChallengeById(id: Int): Challenge? = allChallenges.get(id)
 
 val allChallenges = mapOf<Int, Challenge>(
-       1 to MCChallenge(1, answers = mapOf("3" to false, "4" to true, "5" to false), description = "", question = "What is 2 + 2", tags = listOf("Math","Addition")),
-       2 to MCChallenge(2, answers = mapOf("0" to false, "18" to false, "20" to true), description = "", question = "What is 2 * 10", tags = listOf("Math", "Multiplication")),
-       3 to MCChallenge(3, answers = mapOf("Babirusa" to true, "Crocodile" to false, "Camel" to true), description = "", question = "What animals are mammals", tags = listOf("Bio")),
-       4 to MCChallenge(4, answers = mapOf("Beethoven" to true, "Einstein" to false, "Mozart" to true), description = "", question = "Who were great composers", tags = listOf("Music"))
+        1 to MCChallenge(1, answers = mapOf("3" to false, "4" to true, "5" to false), description = "", question = "What is 2 + 2", tags = listOf("Math", "Addition")),
+        2 to MCChallenge(2, answers = mapOf("0" to false, "18" to false, "20" to true), description = "", question = "What is 2 * 10", tags = listOf("Math", "Multiplication")),
+        3 to MCChallenge(3, answers = mapOf("Babirusa" to true, "Crocodile" to false, "Camel" to true), description = "", question = "What animals are mammals", tags = listOf("Bio")),
+        4 to MCChallenge(4, answers = mapOf("Beethoven" to true, "Einstein" to false, "Mozart" to true), description = "", question = "Who were great composers", tags = listOf("Music"))
 )
 val allTags = listOf<String>(
         "Math", "Multiplication", "Bio", "Music"
